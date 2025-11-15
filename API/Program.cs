@@ -1,7 +1,10 @@
 using API.extensions;
 using Domain.Extensions;
-using System.Text.Json.Serialization;
+using Repository.Extensions;
 using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
+using Repository.Context;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,8 @@ builder.Services.AddAutoMappers();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddFluentValidations();
+builder.Services.RegisterRepositories();
+builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("jamaPayDB"));
 
 var app = builder.Build();
 
