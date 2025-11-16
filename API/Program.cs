@@ -1,6 +1,7 @@
 using API.extensions;
 using Domain.Extensions;
 using Repository.Extensions;
+using Service.Extensions;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Repository.Context;
@@ -22,6 +23,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddFluentValidations();
 builder.Services.RegisterRepositories();
+builder.Services.RegisterServices(builder.Configuration);
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("jamaPayDB"));
 
 var app = builder.Build();
