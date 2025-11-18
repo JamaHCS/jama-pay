@@ -23,11 +23,13 @@ namespace Repository.Context
 
                 entity.OwnsMany(o => o.Fees, fee =>
                 {
+                    fee.ToJson();
                     fee.Property(f => f.Amount).HasPrecision(18, 2);
                 });
 
                 entity.OwnsMany(o => o.Taxes, tax =>
                 {
+                    tax.ToJson();
                     tax.Property(t => t.Amount).HasPrecision(18, 2);
                 });
 

@@ -4,7 +4,6 @@ using Repository.Extensions;
 using Service.Extensions;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using Repository.Context;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,14 +23,11 @@ builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddFluentValidations();
 builder.Services.RegisterRepositories();
 builder.Services.RegisterServices(builder.Configuration);
-builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("jamaPayDB"));
+builder.Services.AddConnection(builder.Configuration);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
 app.UseSwaggerConfiguration();
 app.UseHttpsRedirection();
