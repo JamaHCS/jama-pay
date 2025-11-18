@@ -1,11 +1,10 @@
 ﻿using Domain.DTO.Requests;
 using Domain.Interfaces.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/order")]
+    [Route("api/orders")]
     [ApiController]
     public class OrderController : ControllerBase
     {
@@ -21,9 +20,23 @@ namespace API.Controllers
         {
             var result = await _orderService.CreateOrderAsync(request);
 
-            if (!result.Success) return BadRequest(result);
+            return StatusCode(result.Status, result);
+        }
 
-            return StatusCode(201, result);
+        [HttpGet]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            var result = await _orderService.GetAllOrdersAsync();
+
+            return StatusCode(result.Status, result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrderById(int id)
+        {
+            var result = await _orderService.GetOrderByIdAsync(id);
+
+            return StatusCode(result.Status, result);
         }
     }
 }

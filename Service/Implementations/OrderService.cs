@@ -63,14 +63,40 @@ namespace Service.Implementations
             }
         }
 
-        public Task<Result<List<OrderResponseDTO>>> GetAllOrdersAsync()
+        public async Task<Result<List<OrderResponseDTO>>> GetAllOrdersAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var orders = await _orderRepository.GetAllAsync();
+                var response = _mapper.Map<List<OrderResponseDTO>>(orders);
+
+                return Result<List<OrderResponseDTO>>.Ok<List<OrderResponseDTO>>(response);
+            }
+            catch (Exception ex)
+            {
+                return Result<List<OrderResponseDTO>>.Failure<List<OrderResponseDTO>>($"Failed to get orders: {ex.Message}");
+            }
         }
 
-        public Task<Result<OrderResponseDTO>> GetOrderByIdAsync(int id)
+        public async Task<Result<OrderResponseDTO>> GetOrderByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var order = await _orderRepository.GetByIdAsync(id);
+                
+                if (order is null) return Result<OrderResponseDTO>.Failure<OrderResponseDTO>("Order not found", 404);
+                else 
+                {
+                    var response = _mapper.Map<OrderResponseDTO>(order);
+
+                    return Result<OrderResponseDTO>.Ok<OrderResponseDTO>(response);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Result<OrderResponseDTO>.Failure<OrderResponseDTO>($"Failed to get order: {ex.Message}");
+            }
         }
 
         public Task<Result<bool>> PayOrderAsync(int id)
