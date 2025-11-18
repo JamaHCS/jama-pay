@@ -1,0 +1,82 @@
+name: Main CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run Unit Tests
+      run: dotnet test UnitTests/UnitTests.csproj --no-build --configuration Release --logger "trx;LogFileName=unit-tests.trx"
+
+    - name: Run Integration Tests
+      run: dotnet test IntegrationTests/IntegrationTests.csproj --no-build --configuration Release --logger "trx;LogFileName=integration-tests.trx"
+
+    - name: Publish Test Results
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Test Results
+        path: '**/*.trx'
+        reporter: dotnet-trx
+
+  deploy:
+    name: Deploy
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Install EF Tools
+      run: dotnet tool install --global dotnet-ef
+
+    - name: Build Repository Project
+      run: dotnet build ./Repository/Repository.csproj --configuration Release
+
+    - name: Apply Database Migrations
+      env:
+        CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
+      run: dotnet ef database update --project ./Repository/Repository.csproj
+
+    - name: Build API
+      run: dotnet build ./API/API.csproj --configuration Release
+
+    - name: Publish API
+      run: dotnet publish ./API/API.csproj --configuration Release --output ./publish
+
+    - name: FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@4.0.0
+      with:
+        server: 209.46.124.109
+        username: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./publish/
+        dangerous-clean-slate: true
