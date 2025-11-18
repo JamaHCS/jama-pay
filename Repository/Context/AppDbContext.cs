@@ -6,7 +6,6 @@ namespace Repository.Context
     public class AppDbContext : DbContext
     {
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Product> Products { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -33,16 +32,11 @@ namespace Repository.Context
                     tax.Property(t => t.Amount).HasPrecision(18, 2);
                 });
 
-                entity.HasMany(o => o.Products)
-                    .WithOne(p => p.Order)
-                    .HasForeignKey(p => p.OrderId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
-
-            modelBuilder.Entity<Product>(entity =>
-            {
-                entity.HasKey(p => p.Id);
-                entity.Property(p => p.UnitPrice).HasPrecision(18, 2);
+                entity.OwnsMany(o => o.Products, product =>
+                {
+                    product.ToJson();
+                    product.Property(t => t.UnitPrice).HasPrecision(18, 2);
+                });
             });
         }
     }
