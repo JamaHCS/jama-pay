@@ -38,5 +38,13 @@ namespace API.Controllers
 
             return StatusCode(result.Status, result);
         }
+
+        [HttpPut("cancel/{id}")]
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            var result = await _orderService.CancelOrderAsync(id);
+
+            return StatusCode(result.Status, result);
+        }
     }
 }

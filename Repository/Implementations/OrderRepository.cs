@@ -20,11 +20,6 @@ namespace Repository.Implementations
             return order;
         }
 
-        public Task<bool> DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List<Order>> GetAllAsync()
         {
             return await _context.Orders
@@ -41,7 +36,9 @@ namespace Repository.Implementations
 
         public async Task<Order> UpdateAsync(Order order)
         {
-            throw new NotImplementedException();
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync(); 
+            return order;
         }
     }
 }

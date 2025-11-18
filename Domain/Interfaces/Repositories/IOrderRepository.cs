@@ -8,6 +8,5 @@ namespace Domain.Interfaces.Repositories
         Task<Order?> GetByIdAsync(int id);
         Task<Order> CreateAsync(Order order);
         Task<Order> UpdateAsync(Order order);
-        Task<bool> DeleteAsync(int id);
     }
 }

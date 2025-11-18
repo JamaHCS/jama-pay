@@ -26,6 +26,17 @@ namespace Domain.Mapping
 
             CreateMap<Order, OrderResponseDTO>()
                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+               .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderName))
+               .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+               .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+               .ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method))
+               .ForMember(dest => dest.Fees, opt => opt.MapFrom(src => src.Fees))
+               .ForMember(dest => dest.Taxes, opt => opt.MapFrom(src => src.Taxes))
+               .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products))
+               .ForMember(dest => dest.GrandTotal, opt => opt.MapFrom(src => src.Amount + src.GetTotalFees() + src.Taxes.Sum(t => t.Amount)));
+
+            CreateMap<Order, OrderDetailsResponseDTO>()
+               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                .ForMember(dest => dest.ProviderOrderId, opt => opt.MapFrom(src => src.ProviderOrderId.HasValue ? src.ProviderOrderId.Value.ToString() : null))
                .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderName))
                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
@@ -39,6 +50,7 @@ namespace Domain.Mapping
                .ForMember(dest => dest.TotalCharges, opt => opt.MapFrom(src => src.GetTotalFees() + src.Taxes.Sum(t => t.Amount)))
                .ForMember(dest => dest.GrandTotal, opt => opt.MapFrom(src => src.Amount + src.GetTotalFees() + src.Taxes.Sum(t => t.Amount)))
                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+
 
             CreateMap<ProviderOrderResponseDTO, Order>()
                 .ForMember(dest => dest.ProviderOrderId, opt => opt.MapFrom(src => Guid.Parse(src.OrderId)))

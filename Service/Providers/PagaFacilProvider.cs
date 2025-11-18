@@ -45,10 +45,19 @@ namespace Service.Providers
                 _ => throw new NotSupportedException($"Payment method {method} is not supported by {ProviderName}.")
             };
         }
-
-        public Task<bool> CancelOrderAsync(string providerOrderId)
+        public async Task<bool> CancelOrderAsync(string providerOrderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.PutAsync($"cancel?id={providerOrderId}", null);
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new InvalidOperationException($"Error calling {ProviderName} API: {ex.Message}", ex);
+            }
         }
 
         public async Task<ProviderOrderResponseDTO> CreateOrderAsync(CreateOrderRequestDTO request)

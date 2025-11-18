@@ -3,6 +3,7 @@ using Domain.DTO.Requests;
 using Domain.DTO.Responses;
 using Domain.Entities;
 using Domain.Entities.Global;
+using Domain.Enums;
 using Domain.Interfaces.Providers;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
@@ -29,12 +30,39 @@ namespace Service.Implementations
             _mapper = mapper;
         }
 
-        public Task<Result<bool>> CancelOrderAsync(int id)
+        public async Task<Result<bool>> CancelOrderAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var order = await _orderRepository.GetByIdAsync(id);
+
+                if (order is null) return Result<bool>.Failure<bool>("Order not found", false, 404);
+                if(order.Status == OrderStatus.Paid) return Result<bool>.Failure<bool>("Cannot cancel a paid order", false, 400);
+                if(order.Status == OrderStatus.Cancelled) return Result<bool>.Failure<bool>("Order already cancelled", false, 400);
+                if (order.Status == OrderStatus.Paid) return Result<bool>.Failure<bool>("Cannot cancel a paid order", false, 400);
+                
+                var provider = _paymentProviders.FirstOrDefault(p => p.ProviderName == order.ProviderName);
+
+                if (provider is null) return Result<bool>.Failure<bool>("Payment provider not found", false, 500);
+
+                var cancelled = await provider.CancelOrderAsync(order.ProviderOrderId.ToString());
+                
+                if(!cancelled) return Result<bool>.Failure<bool>("Failed to cancel order with payment provider", false, 500);
+                else
+                {
+                    order.Status = OrderStatus.Cancelled;
+                    await _orderRepository.UpdateAsync(order);
+
+                    return Result<bool>.Ok<bool>(true, 200);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Failure<bool>($"Failed to create order: {ex.Message}", false, 400);
+            }
         }
 
-        public async Task<Result<OrderResponseDTO>> CreateOrderAsync(CreateOrderRequestDTO request)
+        public async Task<Result<OrderDetailsResponseDTO>> CreateOrderAsync(CreateOrderRequestDTO request)
         {
             try
             {
@@ -53,13 +81,13 @@ namespace Service.Implementations
 
                 var savedOrder = await _orderRepository.CreateAsync(order);
 
-                var response = _mapper.Map<OrderResponseDTO>(savedOrder);
+                var response = _mapper.Map<OrderDetailsResponseDTO>(savedOrder);
 
-                return Result<OrderResponseDTO>.Ok<OrderResponseDTO>(response, 201);
+                return Result<OrderDetailsResponseDTO>.Ok<OrderDetailsResponseDTO>(response, 201);
             }
             catch (Exception ex)
             {
-                return Result<OrderResponseDTO>.Failure<OrderResponseDTO>($"Failed to create order: {ex.Message}");
+                return Result<OrderDetailsResponseDTO>.Failure<OrderDetailsResponseDTO>($"Failed to create order: {ex.Message}");
             }
         }
 
@@ -78,24 +106,24 @@ namespace Service.Implementations
             }
         }
 
-        public async Task<Result<OrderResponseDTO>> GetOrderByIdAsync(int id)
+        public async Task<Result<OrderDetailsResponseDTO>> GetOrderByIdAsync(int id)
         {
             try
             {
                 var order = await _orderRepository.GetByIdAsync(id);
                 
-                if (order is null) return Result<OrderResponseDTO>.Failure<OrderResponseDTO>("Order not found", 404);
+                if (order is null) return Result<OrderDetailsResponseDTO>.Failure<OrderDetailsResponseDTO>("Order not found", 404);
                 else 
                 {
-                    var response = _mapper.Map<OrderResponseDTO>(order);
+                    var response = _mapper.Map<OrderDetailsResponseDTO>(order);
 
-                    return Result<OrderResponseDTO>.Ok<OrderResponseDTO>(response);
+                    return Result<OrderDetailsResponseDTO>.Ok<OrderDetailsResponseDTO>(response);
                 }
 
             }
             catch (Exception ex)
             {
-                return Result<OrderResponseDTO>.Failure<OrderResponseDTO>($"Failed to get order: {ex.Message}");
+                return Result<OrderDetailsResponseDTO>.Failure<OrderDetailsResponseDTO>($"Failed to get order: {ex.Message}");
             }
         }
 

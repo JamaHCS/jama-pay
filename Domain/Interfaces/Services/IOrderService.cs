@@ -6,9 +6,9 @@ namespace Domain.Interfaces.Services
 {
     public interface IOrderService
     {
-        Task<Result<OrderResponseDTO>> CreateOrderAsync(CreateOrderRequestDTO request);
+        Task<Result<OrderDetailsResponseDTO>> CreateOrderAsync(CreateOrderRequestDTO request);
         Task<Result<List<OrderResponseDTO>>> GetAllOrdersAsync();
-        Task<Result<OrderResponseDTO>> GetOrderByIdAsync(int id);
+        Task<Result<OrderDetailsResponseDTO>> GetOrderByIdAsync(int id);
         Task<Result<bool>> CancelOrderAsync(int id);
         Task<Result<bool>> PayOrderAsync(int id);
     }

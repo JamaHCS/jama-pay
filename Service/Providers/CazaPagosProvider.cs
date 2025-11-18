@@ -45,9 +45,19 @@ namespace Service.Providers
             };
         }
 
-        public Task<bool> CancelOrderAsync(string providerOrderId)
+        public async Task<bool> CancelOrderAsync(string providerOrderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.PutAsync($"cancellation?id={providerOrderId}", null);
+                response.EnsureSuccessStatusCode();
+                
+                return true;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new InvalidOperationException($"Error calling {ProviderName} API: {ex.Message}", ex);
+            }
         }
 
         public async Task<ProviderOrderResponseDTO> CreateOrderAsync(CreateOrderRequestDTO request)
