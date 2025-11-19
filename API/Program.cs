@@ -39,9 +39,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
 app.UseSwaggerConfiguration();
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
 app.UseCors("AllowAll");
+app.UseHttpsRedirection();
+app.MapControllers();
 
 app.Run();
