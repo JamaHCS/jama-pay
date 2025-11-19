@@ -24,6 +24,15 @@ builder.Services.AddFluentValidations();
 builder.Services.RegisterRepositories();
 builder.Services.RegisterServices(builder.Configuration);
 builder.Services.AddConnection(builder.Configuration);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -33,5 +42,6 @@ app.UseSwaggerConfiguration();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors("AllowAll");
 
 app.Run();
