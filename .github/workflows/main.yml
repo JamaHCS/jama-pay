@@ -4,10 +4,20 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+
+    env:
+      CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
+      PAGAFACIL_API_KEY: ${{ secrets.PAGAFACIL_API_KEY }}
+      CAZAPAGOS_API_KEY: ${{ secrets.CAZAPAGOS_API_KEY }}
 
     steps:
     - name: Checkout code
