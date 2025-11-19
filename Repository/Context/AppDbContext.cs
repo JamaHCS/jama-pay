@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Repository.Context
 {
@@ -7,9 +8,14 @@ namespace Repository.Context
     {
         public DbSet<Order> Orders { get; set; }
 
+        public AppDbContext()
+        {}
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
