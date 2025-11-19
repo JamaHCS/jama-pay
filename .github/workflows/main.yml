@@ -85,6 +85,31 @@ jobs:
     - name: Publish API
       run: dotnet publish ./API/API.csproj --configuration Release --output ./publish
 
+    - name: Create web.config with secrets
+      run: |
+        cat > ./publish/web.config << 'EOF'
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <system.webServer>
+            <handlers>
+              <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" />
+            </handlers>
+            <aspNetCore processPath="dotnet" 
+                        arguments=".\API.dll" 
+                        stdoutLogEnabled="true" 
+                        stdoutLogFile=".\logs\stdout" 
+                        hostingModel="inprocess">
+              <environmentVariables>
+                <environmentVariable name="CONNECTION_STRING" value="${{ secrets.CONNECTION_STRING }}" />
+                <environmentVariable name="PAGAFACIL_API_KEY" value="${{ secrets.PAGAFACIL_API_KEY }}" />
+                <environmentVariable name="CAZAPAGOS_API_KEY" value="${{ secrets.CAZAPAGOS_API_KEY }}" />
+                <environmentVariable name="ASPNETCORE_ENVIRONMENT" value="Development" />
+              </environmentVariables>
+            </aspNetCore>
+          </system.webServer>
+        </configuration>
+        EOF
+
     - name: FTP Deploy
       uses: SamKirkland/FTP-Deploy-Action@4.0.0
       with:
@@ -92,4 +117,7 @@ jobs:
         username: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./publish/
+        exclude: |
+          **/.git*
+          **/.git*/**
         dangerous-clean-slate: true
