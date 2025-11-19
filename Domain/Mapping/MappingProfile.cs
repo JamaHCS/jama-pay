@@ -37,7 +37,7 @@ namespace Domain.Mapping
 
             CreateMap<Order, OrderDetailsResponseDTO>()
                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-               .ForMember(dest => dest.ProviderOrderId, opt => opt.MapFrom(src => src.ProviderOrderId.HasValue ? src.ProviderOrderId.Value.ToString() : null))
+               .ForMember(dest => dest.ProviderOrderId, opt => opt.MapFrom(src => src.ProviderOrderId))
                .ForMember(dest => dest.ProviderName, opt => opt.MapFrom(src => src.ProviderName))
                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
@@ -53,7 +53,7 @@ namespace Domain.Mapping
 
 
             CreateMap<ProviderOrderResponseDTO, Order>()
-                .ForMember(dest => dest.ProviderOrderId, opt => opt.MapFrom(src => Guid.Parse(src.OrderId)))
+                .ForMember(dest => dest.ProviderOrderId, opt => opt.MapFrom(src => src.OrderId))
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => MapProviderStatusToEnum(src.Status)))
                 .ForMember(dest => dest.Method, opt => opt.MapFrom(src => MapProviderMethodToEnum(src.Method)))
