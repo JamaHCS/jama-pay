@@ -22,10 +22,11 @@ namespace Service.Providers
         {
             _httpClient = httpClient;
             _mapper = mapper;
-            _apiKey = configuration["Providers:CazaPagos:ApiKey"]
-                      ?? throw new ArgumentNullException("CazaPagos API Key is not configured");
+            
+            _apiKey = Environment.GetEnvironmentVariable("CAZAPAGOS_API_KEY")
+                      ?? throw new ArgumentNullException("CazaPagos API Key is not configured. Set CAZAPAGOS_API_KEY environment variable or Providers:CazaPagos:ApiKey in appsettings.json");
 
-            _httpClient.BaseAddress = new Uri(configuration["PaymentProviders:CazaPagos:BaseUrl"]
+            _httpClient.BaseAddress = new Uri(configuration["Providers:CazaPagos:BaseUrl"]
                                               ?? "https://app-caza-chg-aviva.azurewebsites.net/");
             _httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
 
