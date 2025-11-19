@@ -5,7 +5,7 @@ namespace Domain.Entities
 {
     public class Order : EntityBase
     {
-        public Guid? ProviderOrderId { get; set; } = Guid.NewGuid();
+        public string? ProviderOrderId { get; set; } 
         public string ProviderName { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.None;
