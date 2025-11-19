@@ -46,5 +46,13 @@ namespace API.Controllers
 
             return StatusCode(result.Status, result);
         }
+
+        [HttpPut("pay/{id}")]
+        public async Task<IActionResult> PayOrder(int id)
+        {
+            var result = await _orderService.PayOrderAsync(id);
+
+            return StatusCode(result.Status, result);
+        }
     }
 }

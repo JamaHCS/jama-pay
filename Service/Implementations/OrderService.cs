@@ -39,7 +39,6 @@ namespace Service.Implementations
                 if (order is null) return Result<bool>.Failure<bool>("Order not found", false, 404);
                 if(order.Status == OrderStatus.Paid) return Result<bool>.Failure<bool>("Cannot cancel a paid order", false, 400);
                 if(order.Status == OrderStatus.Cancelled) return Result<bool>.Failure<bool>("Order already cancelled", false, 400);
-                if (order.Status == OrderStatus.Paid) return Result<bool>.Failure<bool>("Cannot cancel a paid order", false, 400);
                 
                 var provider = _paymentProviders.FirstOrDefault(p => p.ProviderName == order.ProviderName);
 
@@ -58,7 +57,7 @@ namespace Service.Implementations
             }
             catch (Exception ex)
             {
-                return Result<bool>.Failure<bool>($"Failed to create order: {ex.Message}", false, 400);
+                return Result<bool>.Failure<bool>($"Failed to cancel order: {ex.Message}", false, 400);
             }
         }
 
@@ -127,9 +126,33 @@ namespace Service.Implementations
             }
         }
 
-        public Task<Result<bool>> PayOrderAsync(int id)
+        public async Task<Result<bool>> PayOrderAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var order = await _orderRepository.GetByIdAsync(id);
+
+                if (order is null) return Result<bool>.Failure<bool>("Order not found", false, 404);
+                if (order.Status == OrderStatus.Paid) return Result<bool>.Failure<bool>("Order already paid", false, 400);
+                if (order.Status == OrderStatus.Cancelled) return Result<bool>.Failure<bool>("Cannot pay a cancelled order", false, 400);
+
+                var provider = _paymentProviders.FirstOrDefault(p => p.ProviderName == order.ProviderName);
+
+                if (provider is null) return Result<bool>.Failure<bool>("Payment provider not found", false, 500);
+
+                var paid = await provider.PayOrderAsync(order.ProviderOrderId.ToString());
+
+                if (!paid) return Result<bool>.Failure<bool>("Failed to pay order with payment provider", false, 500);
+
+                order.Status = OrderStatus.Paid;
+                await _orderRepository.UpdateAsync(order);
+
+                return Result<bool>.Ok<bool>(true, 200);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Failure<bool>($"Failed to pay order: {ex.Message}", false, 400);
+            }
         }
     }
 }

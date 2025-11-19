@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/.github/" />
-  <Folder Name="/.github/workflows/" />
+  <Folder Name="/.github/workflows/">
+    <File Path=".github/workflows/main.yml" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="IntegrationTests/IntegrationTests.csproj" />
     <Project Path="UnitTests/UnitTests.csproj" />

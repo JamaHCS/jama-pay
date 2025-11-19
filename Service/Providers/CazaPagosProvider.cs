@@ -14,15 +14,12 @@ namespace Service.Providers
         public string ProviderName => "CazaPagos";
 
         private readonly HttpClient _httpClient;
-        private readonly IMapper _mapper;
         private readonly string _apiKey;
         private readonly JsonSerializerOptions _jsonOptions;
 
         public CazaPagosProvider(HttpClient httpClient, IConfiguration configuration, IMapper mapper)
         {
             _httpClient = httpClient;
-            _mapper = mapper;
-            
             _apiKey = Environment.GetEnvironmentVariable("CAZAPAGOS_API_KEY")
                       ?? throw new ArgumentNullException("CazaPagos API Key is not configured. Set CAZAPAGOS_API_KEY environment variable or Providers:CazaPagos:ApiKey in appsettings.json");
 
@@ -92,9 +89,19 @@ namespace Service.Providers
             throw new NotImplementedException();
         }
 
-        public Task<bool> PayOrderAsync(string providerOrderId)
+        public async Task<bool> PayOrderAsync(string providerOrderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.PutAsync($"payment?id={providerOrderId}", null);
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new InvalidOperationException($"Error calling {ProviderName} API: {ex.Message}", ex);
+            }
         }
 
         public bool SupportsPaymentMethod(PaymentMethod method)

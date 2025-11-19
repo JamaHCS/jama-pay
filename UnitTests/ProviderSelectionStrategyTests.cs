@@ -18,7 +18,6 @@ namespace UnitTests
             _pagaFacilMock = new Mock<IPaymentProvider>();
             _cazaPagosMock = new Mock<IPaymentProvider>();
 
-            // Setup provider names
             _pagaFacilMock.Setup(p => p.ProviderName).Returns("PagaFacil");
             _cazaPagosMock.Setup(p => p.ProviderName).Returns("CazaPagos");
         }
@@ -26,7 +25,6 @@ namespace UnitTests
         [Fact]
         public async Task SelectOptimalProvider_WithCard_ShouldSelectPagaFacilWhenCheaper()
         {
-            // Arrange - PagaFacil 1% vs CazaPagos 2%
             decimal amount = 1000m;
             var paymentMethod = PaymentMethod.Card;
 
@@ -38,10 +36,8 @@ namespace UnitTests
 
             var providers = new List<IPaymentProvider> { _pagaFacilMock.Object, _cazaPagosMock.Object };
 
-            // Act
             var result = await _sut.SelectOptimalProviderAsync(amount, paymentMethod, providers);
 
-            // Assert
             result.Should().NotBeNull();
             result.ProviderName.Should().Be("PagaFacil");
         }
@@ -49,7 +45,6 @@ namespace UnitTests
         [Fact]
         public async Task SelectOptimalProvider_WithCash_ShouldSelectPagaFacilAsOnlySupported()
         {
-            // Arrange - Solo PagaFacil soporta Cash
             decimal amount = 500m;
             var paymentMethod = PaymentMethod.Cash;
 
@@ -60,10 +55,8 @@ namespace UnitTests
 
             var providers = new List<IPaymentProvider> { _pagaFacilMock.Object, _cazaPagosMock.Object };
 
-            // Act
             var result = await _sut.SelectOptimalProviderAsync(amount, paymentMethod, providers);
 
-            // Assert
             result.Should().NotBeNull();
             result.ProviderName.Should().Be("PagaFacil");
         }
@@ -71,7 +64,6 @@ namespace UnitTests
         [Fact]
         public async Task SelectOptimalProvider_WithTransfer_ShouldSelectCazaPagosAsOnlySupported()
         {
-            // Arrange - Solo CazaPagos soporta Transfer
             decimal amount = 2000m;
             var paymentMethod = PaymentMethod.Transfer;
 
@@ -82,10 +74,8 @@ namespace UnitTests
 
             var providers = new List<IPaymentProvider> { _pagaFacilMock.Object, _cazaPagosMock.Object };
 
-            // Act
             var result = await _sut.SelectOptimalProviderAsync(amount, paymentMethod, providers);
 
-            // Assert
             result.Should().NotBeNull();
             result.ProviderName.Should().Be("CazaPagos");
         }

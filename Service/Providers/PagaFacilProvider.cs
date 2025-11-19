@@ -15,15 +15,12 @@ namespace Service.Providers
         public string ProviderName => "PagaFacil";
 
         private readonly HttpClient _httpClient;
-        private readonly IMapper _mapper;
         private readonly string _apiKey;
         private readonly JsonSerializerOptions _jsonOptions;
 
         public PagaFacilProvider(HttpClient httpClient, IConfiguration configuration, IMapper mapper)
         {
             _httpClient = httpClient;
-            _mapper = mapper;
-            
             _apiKey = Environment.GetEnvironmentVariable("PAGAFACIL_API_KEY")
                       ?? throw new ArgumentNullException("PagaFacil API Key is not configured. Set PAGAFACIL_API_KEY environment variable or Providers:PagaFacil:ApiKey in appsettings.json");
 
@@ -92,9 +89,19 @@ namespace Service.Providers
             throw new NotImplementedException();
         }
 
-        public Task<bool> PayOrderAsync(string providerOrderId)
+        public async Task<bool> PayOrderAsync(string providerOrderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.PutAsync($"pay?id={providerOrderId}", null);
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new InvalidOperationException($"Error calling {ProviderName} API: {ex.Message}", ex);
+            }
         }
 
         public bool SupportsPaymentMethod(PaymentMethod method)
