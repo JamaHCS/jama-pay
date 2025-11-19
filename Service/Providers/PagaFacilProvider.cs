@@ -23,10 +23,11 @@ namespace Service.Providers
         {
             _httpClient = httpClient;
             _mapper = mapper;
-            _apiKey = configuration["Providers:PagaFacil:ApiKey"]
-                      ?? throw new ArgumentNullException("PagaFacil API Key is not configured");
+            
+            _apiKey = Environment.GetEnvironmentVariable("PAGAFACIL_API_KEY")
+                      ?? throw new ArgumentNullException("PagaFacil API Key is not configured. Set PAGAFACIL_API_KEY environment variable or Providers:PagaFacil:ApiKey in appsettings.json");
 
-            _httpClient.BaseAddress = new Uri(configuration["PaymentProviders:PagaFacil:BaseUrl"]
+            _httpClient.BaseAddress = new Uri(configuration["Providers:PagaFacil:BaseUrl"]
                                               ?? "https://app-paga-chg-aviva.azurewebsites.net/");
             _httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
 

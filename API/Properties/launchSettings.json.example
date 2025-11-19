@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
     "http": {
@@ -8,9 +8,9 @@
       "applicationUrl": "http://localhost:5264",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CONNECTION_STRING": "Server=jamadev.com,1433;Database=jamapay;User Id=jamapay;Password=Acceso117;TrustServerCertificate=True",
-        "PAGAFACIL_API_KEY": "apikey-1cnmoisyhkif6s",
-        "CAZAPAGOS_API_KEY": "apikey-1cnmoisyhkif6s"
+        "DB_CONNECTION_STRING": "",
+        "PAGAFACIL_API_KEY": "",
+        "CAZAPAGOS_API_KEY": ""
       }
     },
     "https": {
@@ -19,10 +19,10 @@
       "launchBrowser": false,
       "applicationUrl": "https://localhost:7001;http://localhost:5264",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "CONNECTION_STRING": "Server=jamadev.com,1433;Database=jamapay;User Id=jamapay;Password=Acceso117;TrustServerCertificate=True",
-        "PAGAFACIL_API_KEY": "apikey-1cnmoisyhkif6s",
-        "CAZAPAGOS_API_KEY": "apikey-1cnmoisyhkif6s"
+        "ASPNETCORE_ENVIRONMENT": "",
+        "DB_CONNECTION_STRING": "",
+        "PAGAFACIL_API_KEY": "",
+        "CAZAPAGOS_API_KEY": ""
       }
     }
   }

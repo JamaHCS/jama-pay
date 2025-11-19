@@ -23,7 +23,7 @@ builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddFluentValidations();
 builder.Services.RegisterRepositories();
 builder.Services.RegisterServices(builder.Configuration);
-builder.Services.AddConnection(builder.Configuration);
+builder.Services.AddConnection();
 
 var app = builder.Build();
 

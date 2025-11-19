@@ -1,8 +1,12 @@
 <Solution>
+  <Folder Name="/.github/" />
+  <Folder Name="/.github/workflows/" />
+  <Folder Name="/Tests/">
+    <Project Path="IntegrationTests/IntegrationTests.csproj" />
+    <Project Path="UnitTests/UnitTests.csproj" />
+  </Folder>
   <Project Path="API/API.csproj" />
   <Project Path="Domain/Domain.csproj" />
-  <Project Path="IntegrationTests/IntegrationTests.csproj" />
   <Project Path="Repository/Repository.csproj" />
   <Project Path="Service/Service.csproj" />
-  <Project Path="UnitTests/UnitTests.csproj" />
 </Solution>
