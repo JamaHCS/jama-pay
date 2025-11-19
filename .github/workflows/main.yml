@@ -53,6 +53,11 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
 
+    env:
+      CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
+      PAGAFACIL_API_KEY: ${{ secrets.PAGAFACIL_API_KEY }}
+      CAZAPAGOS_API_KEY: ${{ secrets.CAZAPAGOS_API_KEY }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -72,8 +77,6 @@ jobs:
       run: dotnet build ./Repository/Repository.csproj --configuration Release
 
     - name: Apply Database Migrations
-      env:
-        CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
       run: dotnet ef database update --project ./Repository/Repository.csproj
 
     - name: Build API
