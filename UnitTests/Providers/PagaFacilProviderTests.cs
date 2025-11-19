@@ -53,7 +53,7 @@ namespace UnitTests.Providers
                         req.Method == HttpMethod.Put &&
                         req.RequestUri.ToString().Contains($"pay?id={orderId}")),
                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+                .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK));
 
             var result = await _sut.PayOrderAsync(orderId);
 
