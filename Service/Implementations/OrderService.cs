@@ -143,13 +143,11 @@ namespace Service.Implementations
                 var paid = await provider.PayOrderAsync(order.ProviderOrderId.ToString());
 
                 if (!paid) return Result<bool>.Failure<bool>("Failed to pay order with payment provider", false, 500);
-                else
-                {
-                    order.Status = OrderStatus.Paid;
-                    await _orderRepository.UpdateAsync(order);
 
-                    return Result<bool>.Ok<bool>(true, 200);
-                }
+                order.Status = OrderStatus.Paid;
+                await _orderRepository.UpdateAsync(order);
+
+                return Result<bool>.Ok<bool>(true, 200);
             }
             catch (Exception ex)
             {
